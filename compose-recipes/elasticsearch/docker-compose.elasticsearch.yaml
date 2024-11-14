@@ -1,0 +1,29 @@
+services:
+    elasticsearch:
+        image: elasticsearch:7.9.3
+        container_name: elasticsearch
+        logging:
+            driver: none
+        environment:
+            - cluster.name=cluster_name
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+            - http.cors.enabled=true
+            - http.cors.allow-origin=*
+        healthcheck:
+            interval: 40s
+            retries: 3
+            test: curl localhost:9200/_cat/health | grep green
+            timeout: 5s
+        volumes:
+            - elastic-data:/usr/share/elasticsearch/data
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+    liferay:
+        depends_on:
+            - elasticsearch
+        environment:
+            -
+volumes:
+    elastic-data:

@@ -13,6 +13,8 @@ class Config {
 	public List<String> composeProfiles = new ArrayList<String>()
 	public String databaseName
 	public String liferayDockerImageId
+	public int liferayDebugPort
+	public int liferayTelnetPort
 
 	@Override
 	public String toString() {
@@ -45,6 +47,7 @@ config.composeFiles.addAll([
 config.composeProfiles.addAll([
 	"liferay",
 
+	// "elasticsearch",
 	"mysql",
 ])
 config.hotfixURLs.addAll([
@@ -52,6 +55,8 @@ config.hotfixURLs.addAll([
 ])
 config.namespace = project.name
 config.databaseName = "lportal"
+config.liferayDebugPort = 8000
+config.liferayTelnetPort = 11311
 config.liferayDockerImageId = gradle.liferayWorkspace.dockerImageId as String
 
 /*
@@ -99,6 +104,17 @@ tasks.register("possibleProfiles") {
 	}
 	group "help"
 }
+tasks.register("exportSnapshot", Zip) {
+	exclude ".gradle"
+	exclude ".idea"
+	exclude "build"
+	exclude "bundles"
+
+	from projectDir
+	destinationDirectory.set(project.layout.dir(project.provider { project.file("exportSnapshots") }))
+	archiveExtension.set("zip")
+	archiveBaseName.set(config.namespace)
+}
 
 clean.dependsOn ":cleanPrepareHotfixes"
 dockerDeploy.dependsOn ":prepareHotfixes"
@@ -117,8 +133,12 @@ composeUp {
 
 dockerCompose {
 	environment.put "DATABASE_NAME", config.databaseName
-	environment.put "LIFERAY_IMAGE_NAME",config.liferayDockerImageId
+	environment.put "DATA_DIRECTORY", "./data"
+	environment.put "LIFERAY_IMAGE_NAME", config.liferayDockerImageId
+	environment.put "LIFERAY_DEBUG_PORT", config.liferayDebugPort
+	environment.put "LIFERAY_TELNET_PORT", config.liferayTelnetPort
 	environment.put "NAMESPACE", config.namespace
 
+	tcpPortsToIgnoreWhenWaiting = [config.liferayDebugPort, config.liferayTelnetPort]
 	useComposeFiles = config.composeFiles
 }
