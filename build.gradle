@@ -216,3 +216,18 @@ dockerCompose {
 	// DEBUG: Set to true if container startup is failing
 	retainContainersOnStartupFailure = false
 }
+
+tasks.register("convertToK8s", Exec) {
+	if (useLiferay) {
+		dependsOn ":buildDockerImage"
+	}
+
+	args config.composeFiles.collect { ["-f", it] }.flatten() + [
+		"convert",
+		"--build", "local",
+		"--chart",
+		"--volumes", "configMap"
+	]
+	environment = environmentMap
+	executable "kompose"
+}
