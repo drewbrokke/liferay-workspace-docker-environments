@@ -2,8 +2,8 @@ name: "${NAMESPACE}"
 services:
     data-helper:
         build:
-            context: .
-            dockerfile: Dockerfile.helper
+            context: helper
+            dockerfile: ../Dockerfile.helper
         container_name: ${NAMESPACE}-data-helper
         volumes:
             - data-volume:/data
