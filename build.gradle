@@ -199,6 +199,19 @@ tasks.register("prepareHotfixes", Download) {
 	src config.hotfixURLs
 }
 
+tasks.register("prepareWebserverConfiguration", Copy) {
+	from "compose-recipes/webserver/config"
+	into "compose-recipes/webserver/build/config"
+	include "*.tmpl"
+
+	expand([
+		clusteringServerStatement: useClustering ? "server liferay-cluster-node:8080;" : "",
+		webserverHostnames: config.webserverHostnames,
+	])
+
+	rename { it.replace(".tmpl", "") }
+}
+
 tasks.register("shareWorkspace", Zip) {
 	archiveFileName = provider {
 		DateTimeFormatter formatter = DateTimeFormatter.
@@ -249,6 +262,12 @@ clean {
 dockerDeploy {
 	if (useLiferay) {
 		dependsOn ":prepareHotfixes"
+	}
+}
+
+composeBuild {
+	if (useWebserver) {
+		dependsOn ":prepareWebserverConfiguration"
 	}
 }
 
