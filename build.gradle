@@ -112,6 +112,7 @@ composeUp {
 	}
 
 	dependsOn checkForLiferayLicense
+	dependsOn importContainerData
 	dependsOn importDatabaseDumps
 	dependsOn importDocumentLibrary
 
