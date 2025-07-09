@@ -27,7 +27,7 @@ gradle.liferayWorkspace {
 tasks.register("prepareWebserverConfig", Copy) {
 	outputs.upToDateWhen { false }
 
-	String clusterHttpUpstreamConfig = useClustering ? "server liferay-cluster-node:8080;" : ""
+	String clusterHttpUpstreamConfig = config.useClustering ? "server liferay-cluster-node:8080;" : ""
 
 	from 'templates/webserver/config'
 
@@ -37,16 +37,6 @@ tasks.register("prepareWebserverConfig", Copy) {
 	expand (webserverHostnames: config.webserverHostnames, clusterHttpUpstreamConfig: clusterHttpUpstreamConfig)
 
 	into 'compose-recipes/webserver/build/config'
-}
-
-tasks.register("prepareHotfixes", Download) {
-	dest project.layout.dir(project.provider {project.file("configs/common/patching")})
-
-	onlyIf("there are hotfix URLs defined") {
-		!config.hotfixURLs.isEmpty()
-	}
-
-	src config.hotfixURLs
 }
 
 tasks.register("shareWorkspace", Zip) {

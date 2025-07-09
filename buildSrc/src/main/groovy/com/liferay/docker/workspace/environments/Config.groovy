@@ -99,10 +99,10 @@ class Config {
 			this.services = services
 		}
 
-		this.product = project.getProperty("liferay.workspace.product")
-		String workspaceDockerImageId = project.getProperty("liferay.workspace.docker.image.liferay")
+		this.product = project.gradle.liferayWorkspace.product
+		String workspaceDockerImageId = project.gradle.liferayWorkspace.dockerImageLiferay
 
-		if (((workspaceProduct != null) && workspaceProduct.startsWith("dxp-")) ||
+		if (((this.product != null) && this.product.startsWith("dxp-")) ||
 			((workspaceDockerImageId != null) && workspaceDockerImageId.startsWith("liferay/dxp:"))) {
 
 			this.liferayDXPImage = true
@@ -123,7 +123,7 @@ class Config {
 
 		this.useClustering = this.useLiferay && this.clusterNodes > 0
 
-		this.useWebserver = config.services.contains("webserver")
+		this.useWebserver = this.services.contains("webserver")
 
 		if (this.services.contains("mysql")) {
 			this.databaseType = "mysql"
