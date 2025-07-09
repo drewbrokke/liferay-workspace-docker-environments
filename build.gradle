@@ -117,7 +117,7 @@ composeUp {
 	dependsOn importDocumentLibrary
 
 	doFirst {
-		println "Using config:\n${config}"
+		println "Using config:\n\n${config}\n\n"
 	}
 
 	onlyIf("there are compose files") {
