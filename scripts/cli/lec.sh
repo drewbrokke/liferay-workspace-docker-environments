@@ -298,6 +298,18 @@ _cmd_gw() {
 _cmd_list() {
 	_listWorktrees
 }
+_cmd_ports() {
+	# docker container inspect fecd364da624 --format '{{range $p, $conf := .NetworkSettings.Ports}}{{range $conf}}{{$p}} -> {{.HostIp}}:{{.HostPort}}{{"\n"}}{{end}}{{end}}'
+	# docker container inspect 12565494f4bd --format '{{range $p, $conf := .NetworkSettings.Ports}}{{range $conf}}{{$p}} -> {{.HostIp}}:{{.HostPort}}{{"\n"}}{{end}}{{end}}'
+	for service in $(docker compose ps --format '{{.Service}}'); do
+		_print_step "Ports for ${service} service:"
+		# docker compose ps "${service}" --format '{{range .Publishers}}{{println}}Hello {{.}}{{end}}'
+		# docker compose ps "${service}" --format '{{json .Publishers}}' | jq '.[] | select(.URL | contains("::"))'
+		docker compose ps "${service}" --format '{{json .Publishers}}' | jq -r '.[] | select(.URL == "::") | "Target: \(.TargetPort) -> localhost:\(.PublishedPort)"'
+		echo
+	done
+
+}
 _cmd_setVersion() {
 	local liferay_version
 
